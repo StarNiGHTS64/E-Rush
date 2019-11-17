@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { Button } from "react-native-elements";
+import { StyleSheet, View } from "react-native";
+import { Button, Text } from "react-native-elements";
+import Toast, { DURATION } from "react-native-easy-toast";
 
 import t from "tcomb-form-native";
 const Form = t.form.Form;
@@ -8,6 +9,8 @@ import {
   RegisterStruct,
   RegisterOptions
 } from "../../components/forms/Register";
+
+import * as firebase from "firebase";
 
 export default class Register extends Component {
   constructor() {
@@ -17,35 +20,57 @@ export default class Register extends Component {
       registerStruct: RegisterStruct,
       registerOptions: RegisterOptions,
       formData: {
-        user: "",
+        name: "",
         email: "",
         password: "",
         passwordConfirmation: ""
-      }
+      },
+      formErrorMessage: ""
     };
   }
 
   register = () => {
-    //console.log("Register Try");
+    //console.log(this.state.formData);
+
     const { password, passwordConfirmation } = this.state.formData;
 
     if (password === passwordConfirmation) {
       const validate = this.refs.registerForm.getValue();
+
       if (validate) {
-        console.log("Formulario Correcto");
+        this.setState({ formErrorMessage: "" });
+
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(validate.email, validate.password)
+          .then(resolve => {
+            //console.log("Formulario Correcto");
+            this.refs.toast.show("Registrado con Exito", 200, () => {
+              this.props.navigation.navigate("MyAccount");
+            });
+          })
+          .catch(err => {
+            //console.log("El email ya esta en uso.");
+            this.refs.toast.show("El email ya ha sido registrado.", 2500);
+          });
       } else {
-        console.log("Formulario Invalido");
+        //console.log("Formulario Invalido");
+        this.setState({
+          formErrorMessage: "Formulario Invalido"
+        });
       }
       //console.log("Contraseñas iguales");
     } else {
       //console.log("Contraseñas No Coinciden");
+      this.setState({
+        formErrorMessage: "Las contraseñas no son iguales"
+      });
     }
 
-    console.log(this.state.formData);
+    //console.log(this.state.formData);
   };
 
   onChangeFormRegister = formValue => {
-    //console.log("Cambio...");
     //console.log(this.state.formData);
     this.setState({
       formData: formValue
@@ -53,7 +78,7 @@ export default class Register extends Component {
   };
 
   render() {
-    const { registerStruct, registerOptions } = this.state;
+    const { registerStruct, registerOptions, formErrorMessage } = this.state;
 
     return (
       <View style={styles.viewBody}>
@@ -65,7 +90,23 @@ export default class Register extends Component {
           value={this.state.formData}
           onChange={formValue => this.onChangeFormRegister(formValue)}
         />
-        <Button title="Unirse" onPress={() => this.register()} />
+        <Button
+          buttonStyle={styles.buttonRegisterContainer}
+          title="Unirse"
+          onPress={() => this.register()}
+        />
+
+        <Text style={styles.formErrorMessage}>{formErrorMessage}</Text>
+
+        <Toast
+          ref="toast"
+          position="bottom"
+          positionValue={250}
+          fadeInDuration={750}
+          fadeOutDuration={1000}
+          opacity={0.8}
+          textStyle={{ color: "#fff" }}
+        />
       </View>
     );
   }
@@ -78,5 +119,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginLeft: 40,
     marginRight: 40
+  },
+  buttonRegisterContainer: {
+    backgroundColor: "#00a680",
+    marginTop: 20,
+    marginLeft: 10,
+    marginRight: 10
+  },
+  formErrorMessage: {
+    color: "#f00",
+    textAlign: "center",
+    marginTop: 30
   }
 });
