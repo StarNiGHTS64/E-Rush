@@ -11,7 +11,9 @@ import {
 import HomeScreen from "../screens/Home";
 import TopFiveScreen from "../screens/TopFive";
 import SearchScreen from "../screens/Search";
-import MyAccountScreen from "../screens/MyAccount";
+//Screens MyAccount
+import MyAccountScreen from "../screens/MyAccount/MyAccount";
+import RegisterScreen from "../screens/MyAccount/Register";
 
 const homeScreenStack = createStackNavigator({
   Home: {
@@ -45,6 +47,12 @@ const myAccountScreenStack = createStackNavigator({
     screen: MyAccountScreen,
     navigationOptions: ({ navigation }) => ({
       title: "Mi Cuenta"
+    })
+  },
+  Register: {
+    screen: RegisterScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: "Registro"
     })
   }
 });
@@ -112,7 +120,7 @@ const RootStack = createBottomTabNavigator(
     }
   },
   {
-    initialRouteName: "Home",
+    initialRouteName: "MyAccount",
 
     order: ["Search", "Home", "TopFive", "MyAccount"],
 
