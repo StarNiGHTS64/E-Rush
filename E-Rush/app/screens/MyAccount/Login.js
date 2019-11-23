@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
-import { Image, Button } from "react-native-elements";
+import { Image, Button, Divider, SocialIcon } from "react-native-elements";
 import Toast, { DURATION } from "react-native-easy-toast";
 
 import t from "tcomb-form-native";
@@ -8,6 +8,7 @@ const Form = t.form.Form;
 import { LoginOptions, LoginStruct } from "../../components/forms/Login";
 
 import * as firebase from "firebase";
+import { FacebookApi } from "../../utils/Social";
 
 export default class Login extends Component {
   constructor() {
@@ -57,6 +58,20 @@ export default class Login extends Component {
     //console.log(validate);
   };
 
+  loginFacebook = async () => {
+    //console.log("Login Facebook...");
+    const {
+      type,
+      token
+    } = await Expo.Facebook.logInWithReadPermissionsAsync(
+      FacebookApi.application_id,
+      { permissions: FacebookApi.permissions }
+    );
+
+    console.log(type);
+    console.log(token);
+  };
+
   onChangeFormLogin = formValue => {
     //console.log("Change Form Login...");
     //console.log(formValue);
@@ -91,6 +106,15 @@ export default class Login extends Component {
             onPress={() => this.login()}
           />
           <Text style={styles.loginErrorMessage}> {loginErrorMessage}</Text>
+
+          <Divider style={styles.divider} />
+
+          <SocialIcon
+            title="Iniciar sesión con Facebook"
+            button
+            type="facebook"
+            onPress={() => this.loginFacebook()}
+          />
         </View>
 
         <Toast
@@ -134,5 +158,9 @@ const styles = StyleSheet.create({
     color: "#f00",
     textAlign: "center",
     marginTop: 20
+  },
+  divider: {
+    backgroundColor: "#00a680",
+    marginBottom: 20
   }
 });
