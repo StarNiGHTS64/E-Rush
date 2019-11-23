@@ -55,7 +55,7 @@ export default class MyAccount extends Component {
         </View>
       );
     } else {
-      return <MyAccountGuest />;
+      return <MyAccountGuest goToScreen={this.goToScreen} />;
     }
   }
 }
