@@ -8,6 +8,7 @@ const Form = t.form.Form;
 import { LoginOptions, LoginStruct } from "../../components/forms/Login";
 
 import * as firebase from "firebase";
+import * as Facebook from "expo-facebook";
 import { FacebookApi } from "../../utils/Social";
 
 export default class Login extends Component {
@@ -63,10 +64,32 @@ export default class Login extends Component {
     const {
       type,
       token
-    } = await Expo.Facebook.logInWithReadPermissionsAsync(
+    } = await Facebook.logInWithReadPermissionsAsync(
       FacebookApi.application_id,
       { permissions: FacebookApi.permissions }
     );
+
+    if (type == "success") {
+      const credentials = firebase.auth.FacebookAuthProvider.credential(token);
+      firabase
+        .auth()
+        .signInWithCredential(credentials)
+        .then(() => {
+          this.refs.toastLogin.show("Login correcto", 100, () => {
+            this.props.navigation.goBack();
+          });
+        })
+        .catch(err => {
+          this.refs.toastLogin.show(
+            "Error accediendo con Facebook, intentelo mas tarde",
+            300
+          );
+        });
+    } else if (type == "cancel") {
+      this.refs.toastLogin.show("Inicio de sesion cancelado", 300);
+    } else {
+      this.refs.toastLogin.show("Error desconocido, intentelo mas tarde", 300);
+    }
 
     console.log(type);
     console.log(token);
