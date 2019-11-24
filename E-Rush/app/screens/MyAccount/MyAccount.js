@@ -10,6 +10,7 @@ import { Button } from "react-native-elements";
 import * as firebase from "firebase";
 
 import MyAccountGuest from "../../components/MyAccount/MyAccountGuest";
+import MyAccountUser from "../../components/MyAccount/MyAccountUser";
 
 export default class MyAccount extends Component {
   constructor() {
@@ -48,12 +49,7 @@ export default class MyAccount extends Component {
     const { login } = this.state;
 
     if (login) {
-      return (
-        <View style={styles.viewBody}>
-          <Text>Estas logeado correctamente...</Text>
-          <Button title="Cerrar sesión" onPress={() => this.logout()} />
-        </View>
-      );
+      return <MyAccountUser />;
     } else {
       return <MyAccountGuest goToScreen={this.goToScreen} />;
     }
