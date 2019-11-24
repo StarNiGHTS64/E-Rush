@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ImagePickerIOS } from "react-native";
 import { Avatar } from "react-native-elements";
 import Toast, { DURATION } from "react-native-easy-toast";
 
 import UpdateUserInfo from "./UpdateUserinfo";
 
 import * as firebase from "firebase";
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
 
 export default class UserInfo extends Component {
   constructor(props) {
@@ -23,6 +25,8 @@ export default class UserInfo extends Component {
 
   componentDidMount = async () => {
     await this.getUserInfo();
+
+    console.log(this.state);
   };
 
   getUserInfo = () => {
@@ -83,6 +87,14 @@ export default class UserInfo extends Component {
       });
   };
 
+  updateUserPhotoURL = async photoUri => {
+    const update = {
+      photoURL: photoUri
+    };
+    await firebase.auth().currentUser.updateProfile(update);
+    this.getUserInfo();
+  };
+
   returnUpdateUserInfoComponente = userInfoData => {
     if (userInfoData.hasOwnProperty("uid")) {
       return (
@@ -95,6 +107,87 @@ export default class UserInfo extends Component {
     }
   };
 
+  changeAvatarUser = async () => {
+    const resultPermision = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    //console.log(resultPermision);
+    if (resultPermision.status === "denied") {
+      this.refs.toast.show(
+        "Esnecesario aceptar los permisos de la galeria",
+        1500
+      );
+    } else {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
+
+      console.log(result);
+      if (result.cancelled) {
+        this.refs.toast.show("Has cerrado la galeria de imagenes", 1500);
+      } else {
+        console.log("Haz seleccionado una imagen");
+        const { uid } = this.state.userInfo;
+        this.uploadImage(result.uri, uid)
+          .then(resolve => {
+            this.refs.toast.show("Avatar actualizado correctamente");
+
+            firebase
+              .storage()
+              .ref("avatar/" + uid)
+              .getDownloadURL()
+              .then(resolve => {
+                console, log(resolve);
+                this.updateUserPhotoURL;
+              });
+          })
+          .catch(error => {
+            this.refs.toast.show(
+              "Error al actualizar el avatar, intentelo mas tarde"
+            );
+          });
+      }
+    }
+  };
+
+  uploadImage = async (uri, imageName) => {
+    //console.log("URI", uri);
+    //console.log("nameImage:", nameImage);
+
+    /*const resultFetch = fetch(uri);
+
+    resultFetch.then(resolve => {
+      console.log(resolve);
+    });*/
+
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+      xhr.onerror = reject;
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          resolve(xhr.response);
+        }
+      };
+
+      xhr.open("GET", uri);
+      xhr.responseType = "blob";
+      xhr.send();
+    })
+      .then(async resolve => {
+        let ref = firebase
+          .storage()
+          .ref()
+          .child("avatar/" + nameImage);
+        return await ref.put(resolve);
+      })
+      .catch(error => {
+        this.refs.toast.show(
+          "Error al subir la imagen al servidor, intentelo mas tarde",
+          1500
+        );
+      });
+  };
+
   render() {
     const { displayName, email, photoURL } = this.state.userInfo;
 
@@ -104,6 +197,8 @@ export default class UserInfo extends Component {
           <Avatar
             rounded
             size="large"
+            showEditButton
+            onEditPress={() => this.changeAvatarUser()}
             source={{
               uri: this.checkUserAvatar(photoURL)
             }}
