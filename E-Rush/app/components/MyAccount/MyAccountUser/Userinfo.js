@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ImagePickerIOS } from "react-native";
-import { Avatar } from "react-native-elements";
+import { Avatar, Button } from "react-native-elements";
 import Toast, { DURATION } from "react-native-easy-toast";
 
 import UpdateUserInfo from "./UpdateUserinfo";
@@ -87,12 +87,37 @@ export default class UserInfo extends Component {
       });
   };
 
-  updateUserPhotoURL = async photoUri => {
-    const update = {
-      photoURL: photoUri
-    };
-    await firebase.auth().currentUser.updateProfile(update);
-    this.getUserInfo();
+  updateUserPassword = async (currentPassword, newPassword) => {
+    //console.log("currentPassword:", currentPassword);
+    //console.log("newPassword:", newPassword);
+    this.reauthenticate(currentPassword)
+      .then(() => {
+        const user = firebase.auth().currentUser;
+
+        user
+          .updatePassword(newPassword)
+          .then(() => {
+            this.refs.toast.show(
+              "Contraseña cambiada correctamente, vuelve a iniciar sesion",
+              50,
+              () => {
+                firebase.auth().signOut();
+              }
+            );
+          })
+          .catch(() => {
+            this.refs.toast.show(
+              "Error del servidor, intentelo mas tarde",
+              1500
+            );
+          });
+      })
+      .catch(() => {
+        this.refs.toast.show(
+          "Tu contraseña actual introducida no es correcta",
+          1500
+        );
+      });
   };
 
   returnUpdateUserInfoComponente = userInfoData => {
@@ -102,9 +127,18 @@ export default class UserInfo extends Component {
           userInfo={this.state.userInfo}
           updateUserDisplayName={this.updateUserDisplayName}
           updateUserEmail={this.updateUserEmail}
+          updateUserPassword={this.updateUserPassword}
         />
       );
     }
+  };
+
+  updateUserPhotoURL = async photoUri => {
+    const update = {
+      photoURL: photoUri
+    };
+    await firebase.auth().currentUser.updateProfile(update);
+    this.getUserInfo();
   };
 
   changeAvatarUser = async () => {
@@ -134,10 +168,10 @@ export default class UserInfo extends Component {
 
             firebase
               .storage()
-              .ref("avatar/" + uid)
+              .ref("avatar/" + uid + ".png")
               .getDownloadURL()
               .then(resolve => {
-                console, log(resolve);
+                console.log(resolve);
                 this.updateUserPhotoURL;
               });
           })
@@ -211,6 +245,13 @@ export default class UserInfo extends Component {
         </View>
         {this.returnUpdateUserInfoComponente(this.state.userInfo)}
 
+        <Button
+          title="Cerrar Sesion"
+          onPress={() => firebase.auth().signOut()}
+          buttonStyle={styles.btnCloseSession}
+          titleStyle={styles.btnCloseSessionText}
+        />
+
         <Toast
           ref="toast"
           position="bottom"
@@ -239,5 +280,17 @@ const styles = StyleSheet.create({
   },
   displayName: {
     fontWeight: "bold"
+  },
+  btnCloseSession: {
+    marginTop: 30,
+    borderRadius: 0,
+    backgroundColor: "#fff",
+    borderTopColor: "#e3e3e3",
+    borderBottomColor: "#e3e3e3",
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  btnCloseSessionText: {
+    color: "#00a680"
   }
 });
