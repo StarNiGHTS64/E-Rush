@@ -113,7 +113,6 @@ export default class AddGaming extends Component {
               gamingRef
                 .update({ image: resolve })
                 .then(() => {
-                  this.setState({ loading: false });
                   this.refs.toast.show(
                     "Gaming Center creado correctaente",
                     100,
@@ -121,6 +120,7 @@ export default class AddGaming extends Component {
                       this.props.navigation.goBack();
                     }
                   );
+                  this.setState({ loading: false });
                 })
                 .catch(() => {
                   this.refs.toast.show("Error de servidor intentelo mas tarde");
