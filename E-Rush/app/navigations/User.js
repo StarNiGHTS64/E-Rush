@@ -8,7 +8,6 @@ import {
 } from "react-navigation";
 
 // Screens
-import HomeScreen from "../screens/Home";
 import TopFiveScreen from "../screens/TopFive";
 import SearchScreen from "../screens/Search";
 //Screens MyAccount
@@ -16,11 +15,40 @@ import MyAccountScreen from "../screens/MyAccount/MyAccount";
 import RegisterScreen from "../screens/MyAccount/Register";
 import LoginScreen from "../screens/MyAccount/Login";
 
-const homeScreenStack = createStackNavigator({
-  Home: {
-    screen: HomeScreen,
+//Screens Gaming
+import GamingScreen from "../screens/Gaming";
+import AddGamingScreen from "../screens/Gamings/addGaming";
+
+//Screens Event
+import EventScreen from "../screens/Event";
+import AddEventScreen from "../screens/Events/addEvent";
+
+const gamingScreenStack = createStackNavigator({
+  Gaming: {
+    screen: GamingScreen,
     navigationOptions: ({ navigation }) => ({
-      title: "Home"
+      title: "Gaming"
+    })
+  },
+  AddGaming: {
+    screen: AddGamingScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: "New Gaming"
+    })
+  }
+});
+
+const eventScreenStack = createStackNavigator({
+  Event: {
+    screen: EventScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: "Event"
+    })
+  },
+  AddEvent: {
+    screen: AddEventScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: "New Event"
     })
   }
 });
@@ -66,13 +94,28 @@ const myAccountScreenStack = createStackNavigator({
 
 const RootStack = createBottomTabNavigator(
   {
-    Home: {
-      screen: homeScreenStack,
+    Gaming: {
+      screen: gamingScreenStack,
       navigationOptions: ({ navigation }) => ({
-        tabBarLabel: "Home",
+        tabBarLabel: "Gaming",
         tabBarLabel: ({ tintColor }) => (
           <Icon
             name="compass-outline"
+            type="material-community"
+            size={22}
+            color={tintColor}
+          />
+        )
+      })
+    },
+
+    Event: {
+      screen: eventScreenStack,
+      navigationOptions: ({ navigation }) => ({
+        tabBarLabel: "Event",
+        tabBarLabel: ({ tintColor }) => (
+          <Icon
+            name="calendar-outline"
             type="material-community"
             size={22}
             color={tintColor}
@@ -127,9 +170,9 @@ const RootStack = createBottomTabNavigator(
     }
   },
   {
-    initialRouteName: "MyAccount",
+    initialRouteName: "Gaming",
 
-    order: ["Search", "Home", "TopFive", "MyAccount"],
+    order: ["Gaming", "Event", "Search", "TopFive", "MyAccount"],
 
     tabBarOptions: {
       inactiveTintColor: "#646464",

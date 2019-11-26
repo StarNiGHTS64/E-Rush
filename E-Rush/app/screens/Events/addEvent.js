@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-export default class Home extends Component {
+export default class AddEvent extends Component {
   render() {
     return (
-      <View style={styles.viewBody}>
-        <Text>Home Screen...</Text>
+      <View styles={styles.viewBody}>
+        <Text>Add Event Screen...</Text>
       </View>
     );
   }
@@ -14,8 +14,8 @@ export default class Home extends Component {
 const styles = StyleSheet.create({
   viewBody: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#fff"
   }
 });
