@@ -19,6 +19,7 @@ import LoginScreen from "../screens/MyAccount/Login";
 import GamingScreen from "../screens/Gaming";
 import AddGamingScreen from "../screens/Gamings/addGaming";
 import ViewGamingScreen from "../screens/Gamings/viewGaming";
+import AddReviewGamingScreen from "../screens/Gamings/addReviewGaming";
 
 //Screens Event
 import EventScreen from "../screens/Event";
@@ -42,6 +43,12 @@ const gamingScreenStack = createStackNavigator({
     screen: ViewGamingScreen,
     navigationOptions: ({ navigation }) => ({
       title: navigation.state.params.gaming.item.gaming.name
+    })
+  },
+  AddReviewGaming: {
+    screen: AddReviewGamingScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: navigation.state.params.name
     })
   }
 });

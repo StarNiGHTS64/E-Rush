@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
-import { Image, Icon, ListItem } from "react-native-elements";
+import { Image, Icon, ListItem, Button } from "react-native-elements";
 
 export default class ViewGaming extends Component {
   constructor(props) {
@@ -9,6 +9,7 @@ export default class ViewGaming extends Component {
 
   render() {
     const {
+      id,
       name,
       type,
       city,
@@ -52,6 +53,16 @@ export default class ViewGaming extends Component {
             />
           ))}
         </View>
+
+        <View style={styles.viewBtnAddReview}>
+          <Button
+            title="Agregar Comentario"
+            onPress={() =>
+              this.props.navigation.navigate("AddReviewGaming", { id, name })
+            }
+            buttonStyle={styles.btnAddReview}
+          />
+        </View>
       </View>
     );
   }
@@ -87,5 +98,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10
+  },
+  viewBtnAddReview: {
+    margin: 20
+  },
+  btnAddReview: {
+    backgroundColor: "#00a680"
   }
 });
