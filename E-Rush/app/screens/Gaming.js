@@ -209,7 +209,7 @@ export default class Gaming extends Component {
   };
 
   clickGaming = gaming => {
-    console.log(gaming);
+    this.props.navigation.navigate("ViewGaming", { gaming });
   };
 
   render() {
@@ -217,7 +217,6 @@ export default class Gaming extends Component {
 
     return (
       <View style={styles.viewBody}>
-        <Text>Gaming Screen...</Text>
         {this.renderFlatList(gamings)}
         {this.loadActionButton()}
       </View>

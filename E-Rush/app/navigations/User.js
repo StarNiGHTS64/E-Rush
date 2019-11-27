@@ -18,10 +18,12 @@ import LoginScreen from "../screens/MyAccount/Login";
 //Screens Gaming
 import GamingScreen from "../screens/Gaming";
 import AddGamingScreen from "../screens/Gamings/addGaming";
+import ViewGamingScreen from "../screens/Gamings/viewGaming";
 
 //Screens Event
 import EventScreen from "../screens/Event";
 import AddEventScreen from "../screens/Events/addEvent";
+import { View } from "react-native";
 
 const gamingScreenStack = createStackNavigator({
   Gaming: {
@@ -34,6 +36,12 @@ const gamingScreenStack = createStackNavigator({
     screen: AddGamingScreen,
     navigationOptions: ({ navigation }) => ({
       title: "New Gaming"
+    })
+  },
+  ViewGaming: {
+    screen: ViewGamingScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: navigation.state.params.gaming.item.gaming.name
     })
   }
 });
