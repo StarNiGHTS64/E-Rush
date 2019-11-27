@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { firebaseApp } from "../utils/FireBase";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import AddGaming from "./Gamings/addGaming";
 const db = firebase.firestore(firebaseApp);
 
 export default class Gaming extends Component {
@@ -55,16 +56,16 @@ export default class Gaming extends Component {
       return (
         <ActionButton
           buttonColor="#00a680"
-          onPress={() => this.goToScreen("AddGaming")}
+          onPress={() =>
+            this.props.navigation.navigate("AddGaming", {
+              loadGamings: this.loadGaming
+            })
+          }
         />
       );
     }
 
     return null;
-  };
-
-  goToScreen = nameScreen => {
-    this.props.navigation.navigate(nameScreen);
   };
 
   loadGaming = async () => {
@@ -90,6 +91,45 @@ export default class Gaming extends Component {
 
       this.setState({
         gamings: resultGaming
+      });
+    });
+  };
+
+  handleLoadMore = async () => {
+    const { limitGaming, startGaming } = this.state;
+    let resultGamings = gamings;
+
+    this.state.gamings.forEach(doc => {
+      resultGamings.push(doc);
+    });
+
+    const gamingsDB = db
+      .collection("gaming")
+      .orderBy("createdAt", "desc")
+      .startAfter(startGaming)
+      .data()
+      .createdAt("createdAt", "desc")
+      .limit(limitGaming);
+
+    await gamingsDB.get().then(response => {
+      if (response.docs.length > 0) {
+        this.setState({
+          startGaming: response.docs[response.docs.length - 1]
+        });
+      } else {
+        this.setState({
+          isLoading: false
+        });
+      }
+
+      response.forEach(doc => {
+        let gaming = doc.data();
+        gaming.id = doc.id;
+        resultGamings.push({ gaming });
+      });
+
+      this.setState({
+        gamings: resultGamings
       });
     });
   };
@@ -130,6 +170,22 @@ export default class Gaming extends Component {
     );
   };
 
+  renderFooter = () => {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loaderGamings}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.notFoundGamings}>
+          <Text>No quedan Gaming Centers que cargar</Text>
+        </View>
+      );
+    }
+  };
+
   renderFlatList = gamings => {
     if (gamings) {
       return (
@@ -137,6 +193,9 @@ export default class Gaming extends Component {
           data={this.state.gamings}
           renderItem={this.renderRow}
           keyExtractor={(item, index) => index.toString()}
+          onEndReached={this.handleLoadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={this.renderFooter}
         />
       );
     } else {
@@ -196,5 +255,14 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     color: "grey",
     width: 300
+  },
+  loaderGamings: {
+    marginTop: 10,
+    marginBottom: 10
+  },
+  notFoundGamings: {
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: "center"
   }
 });

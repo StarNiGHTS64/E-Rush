@@ -21,8 +21,10 @@ import "firebase/firestore";
 const db = firebase.firestore(firebaseApp);
 
 export default class AddGaming extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
+    console.log(this.props.navigation.state.params);
 
     this.state = {
       loading: false,
@@ -117,6 +119,7 @@ export default class AddGaming extends Component {
                     "Gaming Center creado correctaente",
                     100,
                     () => {
+                      this.props.navigation.state.params.loadGaming();
                       this.props.navigation.goBack();
                     }
                   );
