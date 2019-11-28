@@ -24,7 +24,6 @@ import AddReviewGamingScreen from "../screens/Gamings/addReviewGaming";
 //Screens Event
 import EventScreen from "../screens/Event";
 import AddEventScreen from "../screens/Events/addEvent";
-import { View } from "react-native";
 
 const gamingScreenStack = createStackNavigator({
   Gaming: {
@@ -187,7 +186,7 @@ const RootStack = createBottomTabNavigator(
   {
     initialRouteName: "Gaming",
 
-    order: ["Gaming", "Event", "Search", "TopFive", "MyAccount"],
+    order: ["Gaming", "Event", "TopFive", "MyAccount"],
 
     tabBarOptions: {
       inactiveTintColor: "#646464",

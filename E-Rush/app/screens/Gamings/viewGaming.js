@@ -48,10 +48,6 @@ export default class ViewGaming extends Component {
     return false;
   };
 
-  componentDidMount() {
-    this.checkAddReviewUser();
-  }
-
   checkAddReviewUser = () => {
     const user = firebase.auth().currentUser;
     const idUser = user.uid;
@@ -60,8 +56,8 @@ export default class ViewGaming extends Component {
     //console.log("User:", idUser);
     //console.log("idGaming:", idGaming);
 
-    const reviewRef = db.collection("review");
-    const queryRef = reviewRef
+    const reviewsRef = db.collection("review");
+    const queryRef = reviewsRef
       .where("idUser", "==", idUser)
       .where("idGaming", "==", idGaming);
 
@@ -88,7 +84,11 @@ export default class ViewGaming extends Component {
           id,
           name
         } = this.props.navigation.state.params.gaming.item.gaming;
-        this.props.navigation.navigate("AddReviewGaming", { id, name });
+        this.props.navigation.navigate("AddReviewGaming", {
+          id,
+          name,
+          loadReviews: this.loadReviews
+        });
       }
     });
   };
@@ -123,11 +123,9 @@ export default class ViewGaming extends Component {
     const { id } = this.props.navigation.state.params.gaming.item.gaming;
 
     let resultReviews = [];
+    let arrayRating = [];
 
-    const reviews = db
-      .collection("review")
-      .where("idGaming", "==", id)
-      .limit(limitReviews);
+    const reviews = db.collection("review").where("idGaming", "==", id);
 
     return await reviews.get().then(response => {
       this.setState({
@@ -137,10 +135,21 @@ export default class ViewGaming extends Component {
       response.forEach(doc => {
         let review = doc.data();
         resultReviews.push(review);
+
+        arrayRating.push(doc.data().rating);
       });
 
+      let numSum = 0;
+      arrayRating.map(value => {
+        numSum = numSum + value;
+      });
+      const countRating = arrayRating.length;
+      const resultRating = numSum / countRating;
+      const resultRatingFinish = resultRating ? resultRating : 0;
+
       this.setState({
-        reviews: resultReviews
+        reviews: resultReviews,
+        rating: resultRatingFinish
       });
       console.log(this.state.reviews);
     });
@@ -167,32 +176,17 @@ export default class ViewGaming extends Component {
   };
 
   renderRow = reviewData => {
-    const { title, review, rating, idUser, createdAt } = reviewData.item.review;
-    const createReview = new Date(createAt.seconds * 1000);
+    const { title, review, rating, idUser, createAt } = reviewData.item;
+    // const createReview = new Date(createAt.seconds * 1000);
 
     return (
       <View style={styles.viewReview}>
-        <View style={style.viewImage}>
-          <Avatar
-            source={{
-              uri:
-                "https://b.thumbs.redditmedia.com/MDQjKWvNW82SfYXHbA9eFY1O-AFyT-4tpqWOWl3Xo-s.png"
-            }}
-            size="large"
-            rounded
-            containerStyle={styles.imageAvatarUser}
-          />
-        </View>
+        <View style={styles.viewImage}></View>
         <View style={styles.viewInfo}>
           <Text style={styles.reviewTitle}>{title}</Text>
           <Text style={styles.reviewText}>{review}</Text>
           <Rating imageSize={15} startingValue={rating} />
-          <Text style={styles.reviewData}>
-            {createReview.getDate()}/{createReview.getMonth() + 1}/
-            {createReview.getFullYear()} - {createReview.getHours()}:
-            {createReview.getMinutes()}
-          </Text>
-          {creat}
+          <Text style={styles.reviewData}></Text>
         </View>
       </View>
     );
@@ -343,7 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   commentTitle: {
-    formSize: 20,
+    fontSize: 20,
     textAlign: "center",
     marginTop: 20,
     marginBottom: 10,
