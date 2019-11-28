@@ -23,16 +23,16 @@ export default class Gaming extends Component {
 
     this.state = {
       login: false,
-      gaming: null,
-      startGaming: null,
-      limitGaming: 8,
+      gamings: null,
+      startGamings: null,
+      limitGamings: 8,
       isLoading: true
     };
   }
 
   componentDidMount() {
     this.checkLogin();
-    this.loadGaming();
+    this.loadGamings();
   }
 
   checkLogin = () => {
@@ -58,7 +58,7 @@ export default class Gaming extends Component {
           buttonColor="#00a680"
           onPress={() =>
             this.props.navigation.navigate("AddGaming", {
-              loadGamings: this.loadGaming
+              loadGamings: this.loadGamings
             })
           }
         />
@@ -68,36 +68,36 @@ export default class Gaming extends Component {
     return null;
   };
 
-  loadGaming = async () => {
-    const { limitGaming } = this.state;
-    let resultGaming = [];
+  loadGamings = async () => {
+    const { limitGamings } = this.state;
+    let resultGamings = [];
 
     const gamings = db
       .collection("gaming")
       .orderBy("createdAt", "desc")
-      .limit(limitGaming);
+      .limit(limitGamings);
 
     await gamings.get().then(response => {
       this.setState({
-        startGaming: response.docs[response.docs.length - 1]
+        startGamings: response.docs[response.docs.length - 1]
       });
 
       response.forEach(doc => {
         let gaming = doc.data();
         gaming.id = doc.id;
 
-        resultGaming.push({ gaming });
+        resultGamings.push({ gaming });
       });
 
       this.setState({
-        gamings: resultGaming
+        gamings: resultGamings
       });
     });
   };
 
   handleLoadMore = async () => {
-    const { limitGaming, startGaming } = this.state;
-    let resultGamings = gamings;
+    const { limitGamings, startGamings } = this.state;
+    let resultGamings = [];
 
     this.state.gamings.forEach(doc => {
       resultGamings.push(doc);
@@ -105,16 +105,14 @@ export default class Gaming extends Component {
 
     const gamingsDB = db
       .collection("gaming")
-      .orderBy("createdAt", "desc")
-      .startAfter(startGaming)
-      .data()
-      .createdAt("createdAt", "desc")
-      .limit(limitGaming);
+      .orderBy("createAt", "desc")
+      .startAfter(startGamings.data().createdAt)
+      .limit(limitGamings);
 
     await gamingsDB.get().then(response => {
       if (response.docs.length > 0) {
         this.setState({
-          startGaming: response.docs[response.docs.length - 1]
+          startGamings: response.docs[response.docs.length - 1]
         });
       } else {
         this.setState({
@@ -134,7 +132,7 @@ export default class Gaming extends Component {
     });
   };
 
-  renderRow = gamings => {
+  renderRow = gaming => {
     const {
       name,
       type,
@@ -142,10 +140,10 @@ export default class Gaming extends Component {
       address,
       description,
       image
-    } = gamings.item.gaming;
+    } = gaming.item.gaming;
 
     return (
-      <TouchableOpacity onPress={() => this.clickGaming(gamings)}>
+      <TouchableOpacity onPress={() => this.clickGaming(gaming)}>
         <View style={styles.viewGaming}>
           <View style={StyleSheet.viewGamingImage}>
             <Image

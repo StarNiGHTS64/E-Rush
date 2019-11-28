@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ScrollView, ActivityIndicator } from "react-native";
 import { Icon, Image, Button, Text, Overlay } from "react-native-elements";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
@@ -119,7 +119,7 @@ export default class AddGaming extends Component {
                     "Gaming Center creado correctaente",
                     100,
                     () => {
-                      this.props.navigation.state.params.loadGaming();
+                      //this.props.navigation.state.params.loadGamings();
                       this.props.navigation.goBack();
                     }
                   );
@@ -147,7 +147,7 @@ export default class AddGaming extends Component {
   render() {
     const { imageUriGaming, loading } = this.state;
     return (
-      <View style={styles.viewBody}>
+      <ScrollView style={styles.viewBody}>
         <View style={styles.viewPhoto}>
           {this.isImageGaming(imageUriGaming)}
         </View>
@@ -199,7 +199,7 @@ export default class AddGaming extends Component {
           opacity={0.8}
           textStyle={{ color: "#fff" }}
         />
-      </View>
+      </ScrollView>
     );
   }
 }
