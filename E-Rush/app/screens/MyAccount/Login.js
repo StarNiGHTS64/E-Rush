@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
-import { Image, Button } from "react-native-elements";
+import { Image, Button, Divider, SocialIcon } from "react-native-elements";
 import Toast, { DURATION } from "react-native-easy-toast";
 
 import t from "tcomb-form-native";
@@ -8,6 +8,8 @@ const Form = t.form.Form;
 import { LoginOptions, LoginStruct } from "../../components/forms/Login";
 
 import * as firebase from "firebase";
+import * as Facebook from "expo-facebook";
+import { FacebookApi } from "../../utils/Social";
 
 export default class Login extends Component {
   constructor() {
@@ -57,6 +59,42 @@ export default class Login extends Component {
     //console.log(validate);
   };
 
+  loginFacebook = async () => {
+    //console.log("Login Facebook...");
+    const {
+      type,
+      token
+    } = await Facebook.logInWithReadPermissionsAsync(
+      FacebookApi.application_id,
+      { permissions: FacebookApi.permissions }
+    );
+
+    if (type == "success") {
+      const credentials = firebase.auth.FacebookAuthProvider.credential(token);
+      firabase
+        .auth()
+        .signInWithCredential(credentials)
+        .then(() => {
+          this.refs.toastLogin.show("Login correcto", 100, () => {
+            this.props.navigation.goBack();
+          });
+        })
+        .catch(err => {
+          this.refs.toastLogin.show(
+            "Error accediendo con Facebook, intentelo mas tarde",
+            300
+          );
+        });
+    } else if (type == "cancel") {
+      this.refs.toastLogin.show("Inicio de sesion cancelado", 300);
+    } else {
+      this.refs.toastLogin.show("Error desconocido, intentelo mas tarde", 300);
+    }
+
+    console.log(type);
+    console.log(token);
+  };
+
   onChangeFormLogin = formValue => {
     //console.log("Change Form Login...");
     //console.log(formValue);
@@ -101,6 +139,15 @@ export default class Login extends Component {
           </Text>
 
           <Text style={styles.loginErrorMessage}> {loginErrorMessage}</Text>
+
+          <Divider style={styles.divider} />
+
+          <SocialIcon
+            title="Iniciar sesión con Facebook"
+            button
+            type="facebook"
+            onPress={() => this.loginFacebook()}
+          />
         </View>
 
         <Toast
@@ -153,6 +200,11 @@ const styles = StyleSheet.create({
   },
   btnRegister: {
     color: "#00a680",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    marginTop: 20
+  },
+  divider: {
+    backgroundColor: "#00a680",
+    marginBottom: 20
   }
 });
