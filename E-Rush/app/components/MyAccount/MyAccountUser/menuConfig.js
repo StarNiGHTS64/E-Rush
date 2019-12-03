@@ -1,6 +1,6 @@
 export default menuConfig = [
   {
-    title: "Cambiar Nombre y Apellidos",
+    title: "Cambiar Gamertag",
     iconType: "material-community",
     iconNameRight: "chevron-right",
     iconColorRight: "#ccc",

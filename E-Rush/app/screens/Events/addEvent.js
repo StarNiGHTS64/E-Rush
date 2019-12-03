@@ -24,6 +24,20 @@ const db = firebase.firestore(firebaseApp);
 export default class AddEvent extends Component {
   constructor(props) {
     super(props);
+
+    console.log(this.props.navigation.state.params);
+
+    this.state = {
+      loading: false,
+      imageUriEvent: "",
+      formData: {
+        name: "",
+        date: "",
+        city: "",
+        address: "",
+        description: ""
+      }
+    };
   }
 
   isImageEvent = image => {
@@ -73,11 +87,11 @@ export default class AddEvent extends Component {
     });
   };
 
-  AddGaming = () => {
+  AddEvent = () => {
     const { imageUriEvent } = this.state;
     const { name, date, city, address, description } = this.state.formData;
 
-    if (imageUriGaming && name && date && city && address && description) {
+    if (imageUriEvent && name && date && city && address && description) {
       this.setState({
         loading: true
       });
@@ -106,7 +120,7 @@ export default class AddEvent extends Component {
                     "Evento creado correctaente",
                     100,
                     () => {
-                      //this.props.navigation.state.params.loadGamings();
+                      //this.props.navigation.state.params.loadEvents();
                       this.props.navigation.goBack();
                     }
                   );

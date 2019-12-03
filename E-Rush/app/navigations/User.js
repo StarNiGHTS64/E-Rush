@@ -24,6 +24,8 @@ import AddReviewGamingScreen from "../screens/Gamings/addReviewGaming";
 //Screens Event
 import EventScreen from "../screens/Event";
 import AddEventScreen from "../screens/Events/addEvent";
+import ViewEventScreen from "../screens/Events/viewEvent";
+import AddReviewEventScreen from "../screens/Events/addReviewEvent";
 
 const gamingScreenStack = createStackNavigator({
   Gaming: {
@@ -63,6 +65,18 @@ const eventScreenStack = createStackNavigator({
     screen: AddEventScreen,
     navigationOptions: ({ navigation }) => ({
       title: "New Event"
+    })
+  },
+  ViewEvent: {
+    screen: ViewEventScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: navigation.state.params.event.item.event.name
+    })
+  },
+  AddReviewEvent: {
+    screen: AddReviewEventScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: navigation.state.params.name
     })
   }
 });

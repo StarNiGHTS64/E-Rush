@@ -83,7 +83,7 @@ export default class Register extends Component {
     return (
       <View style={styles.viewBody}>
         <Image
-          source={require("../../../assets/img/5-tenedores-letras-icono-logo.png")}
+          source={require("../../../assets/img/Combined.png")}
           containerStyle={styles.containerLogo}
           style={styles.logo}
           PlaceholderContent={<ActivityIndicator />}

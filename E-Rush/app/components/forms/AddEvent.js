@@ -20,10 +20,10 @@ export const AddEventOptions = {
         iconName: "city"
       }
     },
-    type: {
+    date: {
       template: inputTemplate,
       config: {
-        placeholder: "Nombre del evento",
+        placeholder: "Dia del evento",
         iconType: "material-community",
         iconName: "city"
       }
@@ -31,7 +31,7 @@ export const AddEventOptions = {
     city: {
       template: inputTemplate,
       config: {
-        placeholder: "Nombre del evento",
+        placeholder: "Ciudad",
         iconType: "material-community",
         iconName: "city"
       }
@@ -39,9 +39,9 @@ export const AddEventOptions = {
     address: {
       template: inputTemplate,
       config: {
-        placeholder: "Nombre del evento",
+        placeholder: "Direccion",
         iconType: "material-community",
-        iconName: "city"
+        iconName: "map-marker"
       }
     },
     description: {
